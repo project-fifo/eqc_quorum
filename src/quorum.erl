@@ -23,7 +23,7 @@ loop(QuorumPids) ->
       From ! ack,
       loop(Pids);
     {ask_int, From} ->
-      From ! yes,
+      From ! length(QuorumPids),
       loop(QuorumPids);
     {ask, From} ->
       [ P ! {ask_int, self()} || P<-QuorumPids],
