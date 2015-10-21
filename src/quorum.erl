@@ -23,7 +23,7 @@ loop(QuorumPids) ->
       From ! ack,
       loop(Pids);
     {ask_int, From} ->
-      From ! length(QuorumPids),
+      From ! yes,
       loop(QuorumPids);
     {ask, From} ->
       [ P ! {ask_int, self()} || P<-QuorumPids],
@@ -32,7 +32,7 @@ loop(QuorumPids) ->
                   after 100 -> no
                   end || _P <- QuorumPids],
       Agree = [ myself | [ yes || yes <- Answers]],
-      case length(Agree) > ((length(QuorumPids)+1) / 2) of
+      case length(Agree) > (length(QuorumPids) / 2) of
         true  -> From ! yes;
         false -> From ! no
       end,

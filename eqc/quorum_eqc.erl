@@ -64,8 +64,24 @@ ask(Pid) ->
       timeout
   end.
 
-ask_post(#state{procs = Procs, initprocs = Pids}, _Args, Res) ->
+ask_post(#state{procs = _Procs, initprocs = _Pids}, _Args, Res) ->
   eq(Res, yes).
+
+%% --- Operation: kill ---
+kill_pre(#state{initprocs = Pids}) ->
+  Pids /= [].
+
+kill_args(#state{initprocs = Pids}) ->
+  [elements(Pids)].
+
+kill_pre(#state{initprocs = Pids}, [Pid]) ->
+  lists:member(Pid, Pids).
+
+kill(Pid) ->
+  exit(Pid, kill).
+
+kill_next(#state{initprocs = Pids} = S, _Value, [Pid]) ->
+  S#state{initprocs = Pids -- [Pid]}.
 
 
 %% -- Property ---------------------------------------------------------------
